@@ -31,9 +31,46 @@ function Toast({ message, onClose }: { message: string; onClose: () => void }) {
   );
 }
 
+const PRIVACY_DISMISSED_KEY = 'tc-flow:privacy-dismissed';
+
+function PrivacyNotice({ onClose }: { onClose: () => void }) {
+  return (
+    <div className="bg-slate-800/90 border-b border-slate-700 px-6 py-3">
+      <div className="flex items-center justify-center gap-4">
+        {/* Offline globe icon — globe with diagonal strikethrough */}
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-5 h-5 shrink-0 text-slate-400">
+          <circle cx="12" cy="12" r="9" />
+          <path d="M12 3c-2.5 3-4 6.5-4 9s1.5 6 4 9" />
+          <path d="M12 3c2.5 3 4 6.5 4 9s-1.5 6-4 9" />
+          <path d="M3.5 9h17" />
+          <path d="M3.5 15h17" />
+          {/* Diagonal strikethrough */}
+          <line x1="4" y1="4" x2="20" y2="20" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+        <span className="text-sm text-slate-300">
+          <strong className="text-slate-200">Your privacy matters.</strong>{' '}
+          All data stays in your browser's localStorage. No data is ever transmitted to any server.
+        </span>
+        <button
+          onClick={onClose}
+          className="shrink-0 text-slate-400 hover:text-white transition-colors p-1.5 rounded hover:bg-slate-700"
+          aria-label="Dismiss privacy notice"
+        >
+          <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+            <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   const { resetInputs, restoredFromStorage } = useCompStore();
   const [showToast, setShowToast] = useState(false);
+  const [showPrivacy, setShowPrivacy] = useState(() => {
+    try { return !localStorage.getItem(PRIVACY_DISMISSED_KEY); } catch { return true; }
+  });
 
   useEffect(() => {
     if (restoredFromStorage) {
@@ -42,7 +79,13 @@ export default function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col md:flex-row">
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
+      {showPrivacy && (
+        <PrivacyNotice onClose={() => {
+          setShowPrivacy(false);
+          try { localStorage.setItem(PRIVACY_DISMISSED_KEY, '1'); } catch {}
+        }} />
+      )}
       {showToast && (
         <Toast
           message="Restored your last session from browser storage"
@@ -50,6 +93,7 @@ export default function App() {
         />
       )}
 
+      <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
       {/* Left sidebar */}
       <aside className="md:w-[360px] md:min-w-[360px] bg-slate-900 border-r border-slate-800 flex flex-col">
         {/* Header */}
@@ -112,6 +156,7 @@ export default function App() {
           </section>
         </div>
       </main>
+      </div>
     </div>
   );
 }
