@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <linearGradient id="src" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#22c55e"/>
+      <stop offset="100%" stop-color="#4ade80"/>
+    </linearGradient>
+    <linearGradient id="f1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#4ade80"/>
+      <stop offset="100%" stop-color="#22c55e"/>
+    </linearGradient>
+    <linearGradient id="f2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#4ade80"/>
+      <stop offset="100%" stop-color="#3b82f6"/>
+    </linearGradient>
+    <linearGradient id="f3" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#4ade80"/>
+      <stop offset="100%" stop-color="#8b5cf6"/>
+    </linearGradient>
+    <linearGradient id="f4" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#4ade80"/>
+      <stop offset="100%" stop-color="#ef4444"/>
+    </linearGradient>
+    <linearGradient id="f5" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#4ade80"/>
+      <stop offset="100%" stop-color="#f97316"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="url(#bg)"/>
+  <!-- Source bar (left) -->
+  <rect x="6" y="14" width="6" height="36" rx="3" fill="url(#src)"/>
+  <!-- Fan-out flows from single source to 5 destination bars -->
+  <!-- Flow 1: Take-home (largest, green) -->
+  <path d="M12 18 C30 18, 34 8, 46 8 L46 18 C34 18, 30 24, 12 24Z" fill="url(#f1)" opacity="0.85"/>
+  <rect x="46" y="6" width="5" height="14" rx="2.5" fill="#22c55e"/>
+  <!-- Flow 2: Federal tax (blue) -->
+  <path d="M12 24 C30 24, 34 22, 46 22 L46 28 C34 28, 30 28, 12 28Z" fill="url(#f2)" opacity="0.75"/>
+  <rect x="46" y="21" width="5" height="8" rx="2.5" fill="#3b82f6"/>
+  <!-- Flow 3: State tax (purple) -->
+  <path d="M12 28 C30 28, 34 32, 46 32 L46 37 C34 37, 30 32, 12 32Z" fill="url(#f3)" opacity="0.75"/>
+  <rect x="46" y="31" width="5" height="7" rx="2.5" fill="#8b5cf6"/>
+  <!-- Flow 4: FICA (red) -->
+  <path d="M12 32 C30 32, 34 41, 46 41 L46 46 C34 46, 30 36, 12 36Z" fill="url(#f4)" opacity="0.75"/>
+  <rect x="46" y="40" width="5" height="7" rx="2.5" fill="#ef4444"/>
+  <!-- Flow 5: Deductions (orange) -->
+  <path d="M12 36 C30 36, 34 50, 46 50 L46 56 C34 56, 30 44, 12 44Z" fill="url(#f5)" opacity="0.7"/>
+  <rect x="46" y="49" width="5" height="8" rx="2.5" fill="#f97316"/>
+  <!-- Dollar sign on source -->
+  <text x="9" y="36" font-family="system-ui,sans-serif" font-weight="700" font-size="10" fill="#0f172a" text-anchor="middle">$</text>
+</svg>
