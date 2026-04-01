@@ -15,7 +15,7 @@ function Toast({ message, onClose }: { message: string; onClose: () => void }) {
   }, [onClose]);
 
   return (
-    <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 animate-toast-in">
+    <div className="fixed top-4 inset-x-0 z-50 flex justify-center animate-toast-in">
       <div className="bg-emerald-600 text-white text-sm px-4 py-2.5 rounded-lg shadow-lg flex items-center gap-2">
         <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 shrink-0">
           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
@@ -125,8 +125,21 @@ export default function App() {
           <TaxConfig />
         </div>
 
-        <div className="px-5 py-4 border-t border-slate-800 text-xs text-slate-600 text-center">
-          All calculations are estimates. Consult a tax professional.
+        <div className="px-5 py-4 border-t border-slate-800 text-[10px] leading-relaxed text-slate-600 text-center space-y-2">
+          <a
+            href="https://github.com/CharryWu/tc-flow"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-slate-500 hover:text-slate-300 transition-colors"
+          >
+            <svg viewBox="0 0 16 16" fill="currentColor" className="w-3.5 h-3.5">
+              <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
+            </svg>
+            View source
+          </a>
+          <p>
+            This tool provides estimates only and does not constitute tax, legal, or financial advice. Results may not reflect your actual tax liability. Consult a qualified tax professional before making financial decisions. By using this tool you agree that no data leaves your browser. We make no warranties of accuracy or completeness.
+          </p>
         </div>
       </aside>
 
