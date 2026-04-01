@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import * as d3 from 'd3';
 import { sankey, sankeyLinkHorizontal } from 'd3-sankey';
 import type { SankeyGraph, SankeyNode, SankeyLink } from 'd3-sankey';
@@ -20,8 +20,25 @@ type D3SankeyLink = SankeyLink<SankeyNodeData, SankeyLinkData>;
 export function SankeyFlow() {
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const zoomRef = useRef<d3.ZoomBehavior<SVGSVGElement, unknown> | null>(null);
   const { output } = useCompStore();
   const [tooltip, setTooltip] = useState<TooltipState>({ x: 0, y: 0, content: '', visible: false });
+  const [zoomLevel, setZoomLevel] = useState(1);
+
+  const handleZoomIn = useCallback(() => {
+    if (!svgRef.current || !zoomRef.current) return;
+    d3.select(svgRef.current).transition().duration(300).call(zoomRef.current.scaleBy, 1.4);
+  }, []);
+
+  const handleZoomOut = useCallback(() => {
+    if (!svgRef.current || !zoomRef.current) return;
+    d3.select(svgRef.current).transition().duration(300).call(zoomRef.current.scaleBy, 1 / 1.4);
+  }, []);
+
+  const handleReset = useCallback(() => {
+    if (!svgRef.current || !zoomRef.current) return;
+    d3.select(svgRef.current).transition().duration(300).call(zoomRef.current.transform, d3.zoomIdentity);
+  }, []);
 
   useEffect(() => {
     if (!output || !svgRef.current || !containerRef.current) return;
@@ -41,6 +58,21 @@ export function SankeyFlow() {
       .attr('width', width)
       .attr('height', height);
 
+    // Create a group that will be transformed by zoom
+    const g = svg.append('g');
+
+    // Set up zoom behavior
+    const zoom = d3.zoom<SVGSVGElement, unknown>()
+      .scaleExtent([0.3, 5])
+      .on('zoom', (event) => {
+        g.attr('transform', event.transform.toString());
+        setZoomLevel(event.transform.k);
+      });
+
+    svg.call(zoom);
+    zoomRef.current = zoom;
+    setZoomLevel(1);
+
     const sankeyLayout = sankey<SankeyNodeData, SankeyLinkData>()
       .nodeId((d) => d.id)
       .nodeWidth(18)
@@ -58,7 +90,7 @@ export function SankeyFlow() {
     const grossTC = output.grossTC;
 
     // Draw links
-    svg
+    g
       .append('g')
       .selectAll('path')
       .data(graph.links)
@@ -93,7 +125,7 @@ export function SankeyFlow() {
       });
 
     // Draw nodes
-    const nodeGroup = svg
+    const nodeGroup = g
       .append('g')
       .selectAll('g')
       .data(graph.nodes)
@@ -153,7 +185,6 @@ export function SankeyFlow() {
   useEffect(() => {
     const observer = new ResizeObserver(() => {
       if (output) {
-        // Trigger re-render by dispatching a custom event
         svgRef.current?.dispatchEvent(new Event('resize'));
       }
     });
@@ -171,7 +202,45 @@ export function SankeyFlow() {
 
   return (
     <div className="relative w-full" ref={containerRef} style={{ minHeight: 460 }}>
-      <svg ref={svgRef} className="w-full" style={{ overflow: 'visible' }} />
+      <svg ref={svgRef} className="w-full" style={{ overflow: 'hidden', cursor: 'grab' }} />
+
+      {/* Zoom controls */}
+      <div className="absolute top-2 right-2 flex items-center gap-1 bg-slate-800/80 backdrop-blur-sm border border-slate-600/50 rounded-lg p-1 z-10">
+        <button
+          onClick={handleZoomIn}
+          className="w-7 h-7 flex items-center justify-center rounded text-slate-300 hover:bg-slate-700 hover:text-white transition-colors text-sm font-mono"
+          title="Zoom in"
+        >
+          +
+        </button>
+        <span className="text-[10px] text-slate-400 w-10 text-center tabular-nums">
+          {Math.round(zoomLevel * 100)}%
+        </span>
+        <button
+          onClick={handleZoomOut}
+          className="w-7 h-7 flex items-center justify-center rounded text-slate-300 hover:bg-slate-700 hover:text-white transition-colors text-sm font-mono"
+          title="Zoom out"
+        >
+          -
+        </button>
+        <div className="w-px h-4 bg-slate-600 mx-0.5" />
+        <button
+          onClick={handleReset}
+          className="w-7 h-7 flex items-center justify-center rounded text-slate-300 hover:bg-slate-700 hover:text-white transition-colors"
+          title="Reset view"
+        >
+          <svg viewBox="0 0 16 16" fill="currentColor" className="w-3.5 h-3.5">
+            <path d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 1 1 .908-.418A6 6 0 1 1 8 2v1z"/>
+            <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966a.25.25 0 0 1 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
+          </svg>
+        </button>
+      </div>
+
+      {/* Hint text */}
+      <div className="absolute bottom-8 left-2 text-[10px] text-slate-600">
+        Scroll to zoom · Drag to pan
+      </div>
+
       {tooltip.visible && (
         <div
           className="absolute pointer-events-none bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-xs text-white shadow-xl z-10 whitespace-pre"
