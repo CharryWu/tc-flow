@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { CompensationInputs } from './components/InputPanel/CompensationInputs';
 import { DeductionInputs } from './components/InputPanel/DeductionInputs';
 import { TaxConfig } from './components/InputPanel/TaxConfig';
@@ -5,19 +6,68 @@ import { SankeyFlow } from './components/Charts/SankeyFlow';
 import { DonutBreakdown } from './components/Charts/DonutBreakdown';
 import { SummaryCards } from './components/SummaryCards';
 import { TaxBracketTable } from './components/TaxBracketTable';
+import { useCompStore } from './store/useCompStore';
+
+function Toast({ message, onClose }: { message: string; onClose: () => void }) {
+  useEffect(() => {
+    const timer = setTimeout(onClose, 4000);
+    return () => clearTimeout(timer);
+  }, [onClose]);
+
+  return (
+    <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 animate-toast-in">
+      <div className="bg-emerald-600 text-white text-sm px-4 py-2.5 rounded-lg shadow-lg flex items-center gap-2">
+        <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 shrink-0">
+          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
+        </svg>
+        {message}
+        <button onClick={onClose} className="ml-2 hover:text-emerald-200 transition-colors">
+          <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5">
+            <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  );
+}
 
 export default function App() {
+  const { resetInputs, restoredFromStorage } = useCompStore();
+  const [showToast, setShowToast] = useState(false);
+
+  useEffect(() => {
+    if (restoredFromStorage) {
+      setShowToast(true);
+    }
+  }, []);
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col md:flex-row">
+      {showToast && (
+        <Toast
+          message="Restored your last session from browser storage"
+          onClose={() => setShowToast(false)}
+        />
+      )}
+
       {/* Left sidebar */}
       <aside className="md:w-[360px] md:min-w-[360px] bg-slate-900 border-r border-slate-800 flex flex-col">
         {/* Header */}
         <div className="px-6 py-5 border-b border-slate-800">
-          <div className="flex items-center gap-2 mb-1">
-            <div className="w-7 h-7 rounded-lg bg-indigo-500 flex items-center justify-center text-white font-bold text-sm">
-              TC
+          <div className="flex items-center justify-between mb-1">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-indigo-500 flex items-center justify-center text-white font-bold text-sm">
+                TC
+              </div>
+              <h1 className="text-lg font-bold text-white tracking-tight">TC Flow</h1>
             </div>
-            <h1 className="text-lg font-bold text-white tracking-tight">TC Flow</h1>
+            <button
+              onClick={resetInputs}
+              className="text-xs text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 px-2.5 py-1.5 rounded-md transition-colors"
+              title="Reset all inputs to defaults"
+            >
+              Reset
+            </button>
           </div>
           <p className="text-xs text-slate-500">See where every dollar of your TC goes</p>
         </div>
